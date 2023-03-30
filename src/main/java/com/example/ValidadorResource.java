@@ -16,7 +16,7 @@ public class ValidadorResource {
     @Inject ValidadorCTD validador;
 
     @POST
-    public Response hello(DadosDTO dto) {
+    public Response validar(DadosDTO dto) {
         String resposta = validador.iniciar(dto.url(), dto.quantidadeDias());
         if (resposta.contains("Não")) {
             return Response.status(500).entity(resposta).build();

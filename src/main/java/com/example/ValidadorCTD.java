@@ -48,7 +48,7 @@ public class ValidadorCTD {
         try {
             Log.info("Obtendo corpo html...");
             Document doc = Jsoup.connect(URL).get();
-            Log.info("Obtendo corpo html obtido!");
+            Log.info("Corpo html obtido!");
             Log.info("Montando lista de dias com contribuicoes...");
             List<LocalDate> contribuicoesOrdenadas = doc.select("rect")
                     .stream()
