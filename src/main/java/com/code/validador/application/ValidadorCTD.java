@@ -1,5 +1,6 @@
-package com.example;
+package com.code.validador.application;
 
+import com.code.validador.domain.StatusCTD;
 import io.quarkus.logging.Log;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,33 +17,42 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class ValidadorCTD {
 
-    public String iniciar(final String URL, final int qtdDiasParaValidar) {
+    public StatusCTD iniciar(final String PERFIL_GITHUB, final short qtdDiasParaValidar) {
+        StatusCTD statusCTD = new StatusCTD(PERFIL_GITHUB, qtdDiasParaValidar);
         List<LocalDate> contribuicoesOrdenadas;
         try {
+            final String URL = "https://github.com/users/".concat(PERFIL_GITHUB).concat("/contributions");
             contribuicoesOrdenadas = obterContribuicoes(URL).orElse(new ArrayList<>());
         } catch (Exception e) {
-            return e.getMessage();
+            statusCTD.observacoes = e.getMessage();
+            return statusCTD;
         }
-        int count = 1;
+        int qtdDiasCTD = 1;
         LocalDate ultimaDataDaSequencia = null;
         for (LocalDate data : contribuicoesOrdenadas) {
-            if (ultimaDataDaSequencia != null && ChronoUnit.DAYS.between(ultimaDataDaSequencia, data) == 1) {
-                count++;
-                if (count == qtdDiasParaValidar) {
-                    String retorno = """
-                            As datas formam uma sequência de %d dias 
-                            contínuos entre %s e %s.
-                            """;
-                    return String.format(retorno, qtdDiasParaValidar, data.minusDays(qtdDiasParaValidar - 1), data);
+            if (isDiferencaDeUmDia(ultimaDataDaSequencia, data)) {
+                qtdDiasCTD++;
+                if (qtdDiasCTD == qtdDiasParaValidar) {
+                    String retorno = "As datas formam uma sequência de %d dias contínuos entre %s e %s.";
+                    statusCTD.pode_receber_badge = true;
+                    statusCTD.observacoes = String.format(retorno, qtdDiasParaValidar, data.minusDays(qtdDiasParaValidar - 1), data);
+                    return statusCTD;
                 }
             } else {
-                count = 1;
+                qtdDiasCTD = 1; // Reinicia contagem devido a quebra nos dias
             }
             ultimaDataDaSequencia = data;
         }
-        if (count < qtdDiasParaValidar) return "As datas não formam uma sequência de " + qtdDiasParaValidar + " dias contínuos.";
-        return "Não foi possível validar o período!!";
+        if (qtdDiasCTD < qtdDiasParaValidar) {
+            statusCTD.observacoes = "As datas não formam uma sequência de " + qtdDiasParaValidar + " dias contínuos.";
+        }
+        return statusCTD;
     }
+
+    private boolean isDiferencaDeUmDia(LocalDate ultimaDataDaSequencia, LocalDate data) {
+        return ultimaDataDaSequencia != null && ChronoUnit.DAYS.between(ultimaDataDaSequencia, data) == 1;
+    }
+
     public Optional<List<LocalDate>> obterContribuicoes(final String URL) throws Exception {
         Log.info("Obtendo contribuicoes...");
         try {
@@ -63,12 +73,12 @@ public class ValidadorCTD {
                     .sorted(LocalDate::compareTo)
                     .toList();
             Log.info("Lista de dias com contribuicoes montada!");
-            return Optional.ofNullable(contribuicoesOrdenadas);
+            return Optional.of(contribuicoesOrdenadas);
         } catch (IOException e) {
             throw new Exception("Não foi possível obter os dados da URL informada!!");
         } catch (RuntimeException e) {
             e.printStackTrace();
-            throw new Exception("Não foi possível montar a lista de contrubuições!!");
+            throw new Exception("Não foi possível montar a lista de contribuições!!");
         }
     }
 }
