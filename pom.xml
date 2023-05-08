@@ -28,6 +28,28 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
+    <!-- Flyway specific dependencies -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-flyway</artifactId>
+    </dependency>
+
+    <!-- Flyway SQL Server specific dependencies -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-sqlserver</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-mysql</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jdbc-mysql</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy-jackson</artifactId>
@@ -40,11 +62,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>io.quarkiverse.jdbc</groupId>
       <artifactId>quarkus-jdbc-sqlite</artifactId>
       <version>1.0.3</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.jsoup</groupId>
       <artifactId>jsoup</artifactId>

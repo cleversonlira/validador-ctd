@@ -24,4 +24,14 @@ public class StatusCTD  extends PanacheEntityBase {
         this.gitHub = gitHub;
         this.qtd_dias_ctd = qtd_dias_ctd;
     }
+
+    @Override
+    public String toString() {
+        return "StatusCTD{" +
+                "gitHub='" + gitHub + '\'' +
+                ", qtd_dias_ctd=" + qtd_dias_ctd +
+                ", pode_receber_badge=" + pode_receber_badge +
+                ", observacoes='" + observacoes + '\'' +
+                '}';
+    }
 }
